@@ -29,3 +29,6 @@ logs/
 
 # Windows
 Thumbs.db
+
+# Claude Code
+.claude/
