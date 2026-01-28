@@ -4,6 +4,7 @@ import com.multicolorshulkers.MultiColorShulkers;
 import com.multicolorshulkers.MultiColorShulkers.ShulkerColors;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,36 +18,27 @@ public class ShulkerBoxBlockEntityMixin {
     private void onReadNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries, CallbackInfo ci) {
         ShulkerBoxBlockEntity self = (ShulkerBoxBlockEntity) (Object) this;
 
-        MultiColorShulkers.LOGGER.info("[MIXIN] readNbt called, NBT keys: {}", nbt.getKeys());
-
-        // Check if we already have the attachment set by Fabric
+        // Check if we already have valid colors via Fabric's attachment system
         ShulkerColors existing = self.getAttached(MultiColorShulkers.SHULKER_COLORS);
-        MultiColorShulkers.LOGGER.info("[MIXIN] Existing attachment: {}", existing);
         if (existing != null && (existing.topColor() != -1 || existing.bottomColor() != -1)) {
-            MultiColorShulkers.LOGGER.info("[MIXIN] Already have colors, skipping");
             return;
         }
 
-        // Try to read colors from NBT (for items placed from colored shulkers)
-        if (nbt.contains("fabric:attachments")) {
+        // Try to read colors from NBT - handles item-to-block-entity transfer
+        // Fabric stores attachments under "fabric:attachments" key
+        if (nbt.contains("fabric:attachments", NbtElement.COMPOUND_TYPE)) {
             NbtCompound attachments = nbt.getCompound("fabric:attachments");
-            MultiColorShulkers.LOGGER.info("[MIXIN] Found attachments, keys: {}", attachments.getKeys());
             String key = MultiColorShulkers.MOD_ID + ":colors";
-            if (attachments.contains(key)) {
+            if (attachments.contains(key, NbtElement.COMPOUND_TYPE)) {
                 NbtCompound colorsNbt = attachments.getCompound(key);
-                int topColor = colorsNbt.contains("topColor") ? colorsNbt.getInt("topColor") : -1;
-                int bottomColor = colorsNbt.contains("bottomColor") ? colorsNbt.getInt("bottomColor") : -1;
-                MultiColorShulkers.LOGGER.info("[MIXIN] Found colors in NBT: top={}, bottom={}", topColor, bottomColor);
+                int topColor = colorsNbt.contains("topColor", NbtElement.INT_TYPE) ? colorsNbt.getInt("topColor") : -1;
+                int bottomColor = colorsNbt.contains("bottomColor", NbtElement.INT_TYPE) ? colorsNbt.getInt("bottomColor") : -1;
                 if (topColor != -1 || bottomColor != -1) {
                     ShulkerColors colors = new ShulkerColors(topColor, bottomColor);
                     self.setAttached(MultiColorShulkers.SHULKER_COLORS, colors);
-                    MultiColorShulkers.LOGGER.info("[MIXIN] Restored colors!");
+                    MultiColorShulkers.LOGGER.debug("[MIXIN] Restored colors from NBT: top={}, bottom={}", topColor, bottomColor);
                 }
-            } else {
-                MultiColorShulkers.LOGGER.info("[MIXIN] No colors key found in attachments");
             }
-        } else {
-            MultiColorShulkers.LOGGER.info("[MIXIN] No fabric:attachments in NBT");
         }
     }
 }

@@ -21,11 +21,20 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 		// Register packet receiver
 		ClientPlayNetworking.registerGlobalReceiver(ColorSyncPayload.ID, (payload, context) -> {
 			BlockPos pos = payload.pos();
-			ShulkerColors colors = new ShulkerColors(payload.topColor(), payload.bottomColor());
+			int topColor = payload.topColor();
+			int bottomColor = payload.bottomColor();
 
-			COLOR_CACHE.put(pos, colors);
-			MultiColorShulkers.LOGGER.info("[CLIENT] Received colors for {}: top={}, bottom={}",
-				pos, colors.topColor(), colors.bottomColor());
+			if (topColor == -1 && bottomColor == -1) {
+				// Clear sync - remove from cache
+				COLOR_CACHE.remove(pos);
+				MultiColorShulkers.LOGGER.debug("[CLIENT] Cleared colors cache for {}", pos);
+			} else {
+				// Update cache with new colors
+				ShulkerColors colors = new ShulkerColors(topColor, bottomColor);
+				COLOR_CACHE.put(pos, colors);
+				MultiColorShulkers.LOGGER.debug("[CLIENT] Received colors for {}: top={}, bottom={}",
+					pos, topColor, bottomColor);
+			}
 		});
 
 		// Register tooltip callback
