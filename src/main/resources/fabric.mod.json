@@ -5,9 +5,11 @@
 	"name": "Multi-Color Shulker Boxes",
 	"description": "Allows you to color shulker boxes with multiple colors (top and bottom)",
 	"authors": [
-		"Your Name"
+		"JOMOGO"
 	],
-	"contact": {},
+	"contact": {
+		"sources": "https://github.com/JOMOGO/multicolor-shulkers"
+	},
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
@@ -19,8 +21,12 @@
 		]
 	},
 	"mixins": [
-		"multicolor-shulkers.mixins.json"
+		{
+			"config": "multicolor-shulkers.client.mixins.json",
+			"environment": "client"
+		}
 	],
+	"accessWidener": "multicolor-shulkers.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.16.0",
 		"minecraft": "~1.21.4",

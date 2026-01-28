@@ -1,6 +1,5 @@
 package com.multicolorshulkers.client;
 
-import com.multicolorshulkers.MultiColorShulkers;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
@@ -19,30 +18,33 @@ public class ShulkerBoxTooltipCallback {
 		if (!(stack.getItem() instanceof BlockItem blockItem)) return;
 		if (!(blockItem.getBlock() instanceof ShulkerBoxBlock)) return;
 
-		var nbt = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+		var blockEntityData = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+		if (blockEntityData == null) return;
+
+		var nbt = blockEntityData.getNbt();
 		if (nbt == null) return;
 
-		var data = nbt.getNbt();
-		if (data == null) return;
+		if (!nbt.contains("fabric:attachments")) return;
+		var attachments = nbt.getCompound("fabric:attachments");
+		if (!attachments.contains("multicolor-shulkers:colors")) return;
 
-		boolean hasTopColor = data.contains(MultiColorShulkers.TOP_COLOR_KEY);
-		boolean hasBottomColor = data.contains(MultiColorShulkers.BOTTOM_COLOR_KEY);
+		var colorsNbt = attachments.getCompound("multicolor-shulkers:colors");
+		int topColor = colorsNbt.contains("topColor") ? colorsNbt.getInt("topColor") : -1;
+		int bottomColor = colorsNbt.contains("bottomColor") ? colorsNbt.getInt("bottomColor") : -1;
 
-		if (hasTopColor || hasBottomColor) {
+		if (topColor != -1 || bottomColor != -1) {
 			tooltip.add(Text.empty());
 			tooltip.add(Text.literal("Custom Colors:").formatted(Formatting.GRAY, Formatting.ITALIC));
 
-			if (hasTopColor) {
-				int topColorId = data.getInt(MultiColorShulkers.TOP_COLOR_KEY);
-				DyeColor dyeColor = DyeColor.byId(topColorId);
+			if (topColor != -1) {
+				DyeColor dyeColor = DyeColor.byId(topColor);
 				String colorName = formatColorName(dyeColor.getName());
 				tooltip.add(Text.literal("  Top: ").formatted(Formatting.GRAY)
 						.append(Text.literal(colorName).formatted(getFormattingForDye(dyeColor))));
 			}
 
-			if (hasBottomColor) {
-				int bottomColorId = data.getInt(MultiColorShulkers.BOTTOM_COLOR_KEY);
-				DyeColor dyeColor = DyeColor.byId(bottomColorId);
+			if (bottomColor != -1) {
+				DyeColor dyeColor = DyeColor.byId(bottomColor);
 				String colorName = formatColorName(dyeColor.getName());
 				tooltip.add(Text.literal("  Bottom: ").formatted(Formatting.GRAY)
 						.append(Text.literal(colorName).formatted(getFormattingForDye(dyeColor))));

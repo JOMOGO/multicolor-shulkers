@@ -1,0 +1,13 @@
+accessWidener v2 named
+
+# Access the private model field in ShulkerBoxBlockEntityRenderer
+accessible field net/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer model Lnet/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer$ShulkerBoxBlockModel;
+
+# Access the nested ShulkerBoxBlockModel class
+accessible class net/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer$ShulkerBoxBlockModel
+
+# Access the lid field in ShulkerBoxBlockModel
+accessible field net/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer$ShulkerBoxBlockModel lid Lnet/minecraft/client/model/ModelPart;
+
+# Access the root field in Model (parent class of ShulkerBoxBlockModel)
+accessible field net/minecraft/client/model/Model root Lnet/minecraft/client/model/ModelPart;
