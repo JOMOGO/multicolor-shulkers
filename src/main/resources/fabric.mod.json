@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "multicolor-shulkers",
+	"version": "${version}",
+	"name": "Multi-Color Shulker Boxes",
+	"description": "Allows you to color shulker boxes with multiple colors (top and bottom)",
+	"authors": [
+		"Your Name"
+	],
+	"contact": {},
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.multicolorshulkers.MultiColorShulkers"
+		],
+		"client": [
+			"com.multicolorshulkers.client.MultiColorShulkersClient"
+		]
+	},
+	"mixins": [
+		"multicolor-shulkers.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
