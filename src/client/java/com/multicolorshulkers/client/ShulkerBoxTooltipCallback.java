@@ -1,7 +1,8 @@
 package com.multicolorshulkers.client;
 
+import com.multicolorshulkers.MultiColorShulkers;
+import com.multicolorshulkers.MultiColorShulkers.ShulkerColors;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,19 +19,11 @@ public class ShulkerBoxTooltipCallback {
 		if (!(stack.getItem() instanceof BlockItem blockItem)) return;
 		if (!(blockItem.getBlock() instanceof ShulkerBoxBlock)) return;
 
-		var blockEntityData = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-		if (blockEntityData == null) return;
+		ShulkerColors colors = MultiColorShulkers.getColorsFromItemStack(stack);
+		if (colors == null) return;
 
-		var nbt = blockEntityData.getNbt();
-		if (nbt == null) return;
-
-		if (!nbt.contains("fabric:attachments")) return;
-		var attachments = nbt.getCompound("fabric:attachments");
-		if (!attachments.contains("multicolor-shulkers:colors")) return;
-
-		var colorsNbt = attachments.getCompound("multicolor-shulkers:colors");
-		int topColor = colorsNbt.contains("topColor") ? colorsNbt.getInt("topColor") : -1;
-		int bottomColor = colorsNbt.contains("bottomColor") ? colorsNbt.getInt("bottomColor") : -1;
+		int topColor = colors.topColor();
+		int bottomColor = colors.bottomColor();
 
 		if (topColor != -1 || bottomColor != -1) {
 			tooltip.add(Text.empty());
