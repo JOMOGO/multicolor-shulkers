@@ -11,3 +11,9 @@ accessible field net/minecraft/client/render/block/entity/ShulkerBoxBlockEntityR
 
 # Access the root field in Model (parent class of ShulkerBoxBlockModel)
 accessible field net/minecraft/client/model/Model root Lnet/minecraft/client/model/ModelPart;
+
+# Access fields in ShulkerBoxModelRenderer for item rendering
+accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer blockEntityRenderer Lnet/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer;
+accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer openness F
+accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer orientation Lnet/minecraft/util/math/Direction;
+accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer textureId Lnet/minecraft/client/util/SpriteIdentifier;
