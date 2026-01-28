@@ -4,7 +4,9 @@
 	"package": "com.multicolorshulkers.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ShulkerBoxBlockEntityRendererMixin"
+		"ShulkerBoxBlockEntityRendererMixin",
+		"ShulkerBoxModelRendererMixin",
+		"SpecialItemModelMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

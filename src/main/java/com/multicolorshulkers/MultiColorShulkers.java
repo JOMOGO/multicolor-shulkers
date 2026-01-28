@@ -70,15 +70,18 @@ public class MultiColorShulkers implements ModInitializer {
 		// Sync colors when a shulker box block entity is loaded (e.g., placed from item, chunk load)
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, world) -> {
 			if (!(world instanceof ServerWorld serverWorld)) return;
-			if (!(blockEntity instanceof ShulkerBoxBlockEntity shulkerBox)) return;
+			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) return;
 
-			ShulkerColors colors = shulkerBox.getAttached(SHULKER_COLORS);
-			BlockPos pos = shulkerBox.getPos();
+			BlockPos pos = blockEntity.getPos();
 
-			// Schedule sync for next tick to avoid issues during world load
+			// Schedule sync for next tick to allow readNbt to restore colors from item data first
 			serverWorld.getServer().execute(() -> {
 				if (serverWorld.getPlayers().isEmpty()) return;
-				if (!(serverWorld.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity)) return;
+				// Re-fetch the block entity to get current state after NBT loading
+				if (!(serverWorld.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBox)) return;
+
+				// Read colors NOW, after readNbt has had a chance to restore them
+				ShulkerColors colors = shulkerBox.getAttached(SHULKER_COLORS);
 
 				if (colors == null || (colors.topColor() == -1 && colors.bottomColor() == -1)) {
 					// No custom colors - send a "clear" sync to remove any stale cache entries

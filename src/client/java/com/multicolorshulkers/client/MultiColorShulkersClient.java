@@ -16,6 +16,21 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 	// Client-side cache of shulker colors for placed blocks
 	public static final Map<BlockPos, ShulkerColors> COLOR_CACHE = new ConcurrentHashMap<>();
 
+	// ThreadLocal for passing item colors through the render pipeline
+	private static final ThreadLocal<ShulkerColors> ITEM_COLORS = new ThreadLocal<>();
+
+	public static void setItemColors(ShulkerColors colors) {
+		ITEM_COLORS.set(colors);
+	}
+
+	public static ShulkerColors getItemColors() {
+		return ITEM_COLORS.get();
+	}
+
+	public static void clearItemColors() {
+		ITEM_COLORS.remove();
+	}
+
 	@Override
 	public void onInitializeClient() {
 		// Register packet receiver
