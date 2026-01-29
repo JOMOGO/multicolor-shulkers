@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"id": "multicolor-shulkers",
 	"version": "${version}",
-	"name": "Multi-Color Shulker Boxes",
-	"description": "Allows you to color shulker boxes with multiple colors (top and bottom)",
+	"name": "Dual-Dye Shulkers",
+	"description": "Apply different colors to the top (lid) and bottom (base) of shulker boxes",
 	"authors": [
 		"JOMOGO"
 	],
@@ -30,7 +30,7 @@
 	"accessWidener": "multicolor-shulkers.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.16.0",
-		"minecraft": "~1.21.4",
+		"minecraft": "~${minecraft_version}",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
