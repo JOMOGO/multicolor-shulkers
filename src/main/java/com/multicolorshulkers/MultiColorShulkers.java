@@ -6,9 +6,8 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -23,10 +22,16 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mojang.serialization.Codec;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class MultiColorShulkers implements ModInitializer {
@@ -57,9 +62,19 @@ public class MultiColorShulkers implements ModInitializer {
 		ShulkerColors.CODEC
 	);
 
+	// Server-side tracking of colored shulker positions per dimension
+	private static final Map<RegistryKey<World>, Set<BlockPos>> COLORED_SHULKERS = new ConcurrentHashMap<>();
+
+	// Players waiting for color sync (processed next tick to avoid blocking join)
+	private static final Set<ServerPlayerEntity> PENDING_SYNCS = ConcurrentHashMap.newKeySet();
+
+	private static Set<BlockPos> getColoredShulkers(RegistryKey<World> dimension) {
+		return COLORED_SHULKERS.computeIfAbsent(dimension, k -> ConcurrentHashMap.newKeySet());
+	}
+
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Multi-Color Shulker Boxes initialized!");
+		LOGGER.info("Dual-Dye Shulkers initialized!");
 
 		// Register the sync packet
 		PayloadTypeRegistry.playS2C().register(ColorSyncPayload.ID, ColorSyncPayload.CODEC);
@@ -67,40 +82,65 @@ public class MultiColorShulkers implements ModInitializer {
 		// Register cauldron behavior to wash off custom colors from shulker box items
 		registerCauldronBehavior();
 
-		// Sync colors when a shulker box block entity is loaded (e.g., placed from item, chunk load)
+		// Track colored shulker positions when block entities load
+		// We just track the position here - actual sync happens on player join or when colors change
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, world) -> {
-			if (!(world instanceof ServerWorld serverWorld)) return;
-			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) return;
-
-			BlockPos pos = blockEntity.getPos();
-
-			// Schedule sync for next tick to allow readNbt to restore colors from item data first
-			serverWorld.getServer().execute(() -> {
-				if (serverWorld.getPlayers().isEmpty()) return;
-				// Re-fetch the block entity to get current state after NBT loading
-				if (!(serverWorld.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBox)) return;
-
-				// Read colors NOW, after readNbt has had a chance to restore them
-				ShulkerColors colors = shulkerBox.getAttached(SHULKER_COLORS);
-
-				if (colors == null || (colors.topColor() == -1 && colors.bottomColor() == -1)) {
-					// No custom colors - send a "clear" sync to remove any stale cache entries
-					syncColorsToClients(serverWorld, pos, ShulkerColors.DEFAULT);
-				} else {
-					// Has custom colors - sync them
-					syncColorsToClients(serverWorld, pos, colors);
-				}
-			});
-		});
-
-		// Clear cache when shulker box is unloaded/broken
-		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, world) -> {
 			if (!(world instanceof ServerWorld serverWorld)) return;
 			if (!(blockEntity instanceof ShulkerBoxBlockEntity shulkerBox)) return;
 
-			// Send a "clear" sync to remove cache entry
-			BlockPos pos = shulkerBox.getPos();
-			syncColorsToClients(serverWorld, pos, ShulkerColors.DEFAULT);
+			// Check colors directly - attachments are already loaded at this point
+			ShulkerColors colors = shulkerBox.getAttached(SHULKER_COLORS);
+			BlockPos pos = blockEntity.getPos();
+
+			if (colors != null && (colors.topColor() != -1 || colors.bottomColor() != -1)) {
+				// Has custom colors - track it
+				getColoredShulkers(serverWorld.getRegistryKey()).add(pos);
+			}
+		});
+
+		// Remove from tracking when shulker box is unloaded/broken
+		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, world) -> {
+			if (!(world instanceof ServerWorld serverWorld)) return;
+			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) return;
+
+			// Just remove from tracking - client cache will be cleared naturally or on rejoin
+			BlockPos pos = blockEntity.getPos();
+			getColoredShulkers(serverWorld.getRegistryKey()).remove(pos);
+		});
+
+		// Sync all nearby colored shulkers when a player joins (delayed to avoid blocking join)
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			ServerPlayerEntity player = handler.getPlayer();
+			// Store player reference for delayed sync
+			PENDING_SYNCS.add(player);
+		});
+
+		// Process pending syncs each tick (safer than during join)
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (PENDING_SYNCS.isEmpty()) return;
+
+			for (ServerPlayerEntity player : PENDING_SYNCS) {
+				if (player.isDisconnected()) continue;
+
+				ServerWorld world = player.getServerWorld();
+				BlockPos playerPos = player.getBlockPos();
+				int radius = 64;
+
+				Set<BlockPos> coloredPositions = getColoredShulkers(world.getRegistryKey());
+				for (BlockPos pos : coloredPositions) {
+					if (playerPos.isWithinDistance(pos, radius)) {
+						if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBox) {
+							ShulkerColors colors = shulkerBox.getAttached(SHULKER_COLORS);
+							if (colors != null && (colors.topColor() != -1 || colors.bottomColor() != -1)) {
+								ColorSyncPayload payload = new ColorSyncPayload(pos, colors.topColor(), colors.bottomColor());
+								ServerPlayNetworking.send(player, payload);
+								LOGGER.debug("[JOIN] Synced colors for {} to {}", pos, player.getName().getString());
+							}
+						}
+					}
+				}
+			}
+			PENDING_SYNCS.clear();
 		});
 
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
@@ -134,24 +174,23 @@ public class MultiColorShulkers implements ModInitializer {
 
 			// Get current colors or create default
 			ShulkerColors currentColors = shulkerBox.getAttachedOrCreate(SHULKER_COLORS, () -> ShulkerColors.DEFAULT);
-			LOGGER.info("[DYE] Current colors before applying: top={}, bottom={}",
-				currentColors.topColor(), currentColors.bottomColor());
 			ShulkerColors newColors;
 
 			if (player.isSneaking()) {
 				newColors = currentColors.withBottomColor(dyeColor);
-				LOGGER.info("Setting bottom color to {} ({})", dyeItem.getColor().getName(), dyeColor);
+				LOGGER.debug("[DYE] Setting bottom color to {} ({})", dyeItem.getColor().getName(), dyeColor);
 			} else {
 				newColors = currentColors.withTopColor(dyeColor);
-				LOGGER.info("Setting top color to {} ({})", dyeItem.getColor().getName(), dyeColor);
+				LOGGER.debug("[DYE] Setting top color to {} ({})", dyeItem.getColor().getName(), dyeColor);
 			}
 
 			// Set the new colors
 			shulkerBox.setAttached(SHULKER_COLORS, newColors);
 			shulkerBox.markDirty();
 
-			// Sync to all nearby players
+			// Track and sync to all nearby players
 			if (world instanceof ServerWorld serverWorld) {
+				getColoredShulkers(serverWorld.getRegistryKey()).add(blockPos);
 				syncColorsToClients(serverWorld, blockPos, newColors);
 			}
 
@@ -164,8 +203,6 @@ public class MultiColorShulkers implements ModInitializer {
 			if (player instanceof ServerPlayerEntity serverPlayer) {
 				serverPlayer.swingHand(hand, true);
 			}
-
-			LOGGER.info("Colors now: top={}, bottom={}", newColors.topColor(), newColors.bottomColor());
 
 			return ActionResult.SUCCESS;
 		});
@@ -204,7 +241,7 @@ public class MultiColorShulkers implements ModInitializer {
 				if (colors != null && (colors.topColor() != -1 || colors.bottomColor() != -1)) {
 					// We have custom colors - remove them
 					if (!world.isClient()) {
-						LOGGER.info("[CAULDRON] Removing custom colors from item");
+						LOGGER.debug("[CAULDRON] Removing custom colors from item");
 						removeColorsFromItemStack(stack);
 
 						// Decrement cauldron water level
@@ -225,8 +262,6 @@ public class MultiColorShulkers implements ModInitializer {
 
 			CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(shulkerItem, washShulkerColors);
 		}
-
-		LOGGER.info("Registered cauldron behavior for washing shulker box colors");
 	}
 
 	/**
@@ -290,7 +325,7 @@ public class MultiColorShulkers implements ModInitializer {
 			// Update the item's block entity data
 			stack.set(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA,
 				net.minecraft.component.type.NbtComponent.of(nbt));
-			LOGGER.info("[CAULDRON] Successfully removed colors from item NBT");
+			LOGGER.debug("[CAULDRON] Removed custom colors from item");
 		}
 	}
 }
