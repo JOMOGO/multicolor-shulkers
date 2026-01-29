@@ -37,7 +37,7 @@ public class ShulkerBoxBlockMixin {
             return;
         }
 
-        MultiColorShulkers.LOGGER.info("[DROP] Found colors on block entity: top={}, bottom={}", colors.topColor(), colors.bottomColor());
+        MultiColorShulkers.LOGGER.debug("[DROP] Found colors on block entity: top={}, bottom={}", colors.topColor(), colors.bottomColor());
 
         // Add the colors to each dropped item's block entity data
         List<ItemStack> drops = cir.getReturnValue();
@@ -45,7 +45,7 @@ public class ShulkerBoxBlockMixin {
             if (stack.getItem() instanceof net.minecraft.item.BlockItem blockItem) {
                 if (blockItem.getBlock() instanceof ShulkerBoxBlock) {
                     addColorsToItemStack(stack, colors);
-                    MultiColorShulkers.LOGGER.info("[DROP] Added colors to dropped item");
+                    MultiColorShulkers.LOGGER.debug("[DROP] Added colors to dropped item");
                 }
             }
         }

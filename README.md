@@ -1,63 +1,52 @@
-# Multi-Color Shulker Boxes
+# Dual-Dye Shulkers
 
-A Fabric mod for Minecraft 1.21.4 that allows you to apply multiple colors to shulker boxes!
+[![Modrinth](https://img.shields.io/modrinth/dt/dual-dye-shulkers?logo=modrinth&label=Modrinth)](https://modrinth.com/project/dual-dye-shulkers)
+
+A Fabric mod for Minecraft 1.21.4 that lets you apply different colors to the **top (lid)** and **bottom (base)** of shulker boxes!
 
 ## Features
 
-- **Multi-color shulker boxes**: Apply different colors to the top and bottom of shulker boxes
-- **Simple interaction**: Right-click shulker boxes with dyes to color them
-- **Visual feedback**: Tooltips show which colors are applied
-- **Survival-friendly**: Works in both creative and survival modes
+- **Dual-color shulker boxes** - Apply one color to the lid, another to the base
+- **Simple controls**:
+  - Right-click with dye → colors the **top (lid)**
+  - Shift + right-click with dye → colors the **bottom (base)**
+- **Works with all 16 dye colors** (256 combinations!)
+- **Colors persist** through break/place cycles
+- **Cauldron washing** - Remove custom colors with a water cauldron
+- **Tooltip display** - See applied colors when hovering over items
+- **Full 3D rendering** - Colors display correctly on placed blocks and items
 
 ## Usage
 
-### Applying Colors
+1. Place a shulker box
+2. Hold any dye and right-click the shulker to color the **lid**
+3. Hold any dye and shift+right-click to color the **base**
+4. To remove colors, use a water cauldron on the shulker box item
 
-1. **Place a shulker box** in the world (any color works)
-2. **Color the top**: Right-click the shulker box with any dye
-3. **Color the bottom**: Sneak (shift) + right-click with any dye
-4. **Pick up the box**: Break it to pick it up - the colors are saved!
+## Requirements
 
-### Checking Colors
-
-Hover over a colored shulker box in your inventory to see a tooltip showing which colors are applied:
-```
-Custom Colors:
-  Top: Red
-  Bottom: Blue
-```
+- Minecraft 1.21.4
+- Fabric Loader 0.16.0+
+- [Fabric API](https://modrinth.com/mod/fabric-api)
 
 ## Installation
 
-1. Install [Fabric Loader](https://fabricmc.net/use/) for Minecraft 1.21.4
-2. Install [Fabric API](https://modrinth.com/mod/fabric-api)
-3. Download the mod JAR from [Releases](../../releases)
-4. Place it in your `.minecraft/mods` folder
-5. Launch Minecraft with the Fabric profile
+1. Install [Fabric Loader](https://fabricmc.net/use/)
+2. Download [Fabric API](https://modrinth.com/mod/fabric-api)
+3. Download this mod from [Modrinth](https://modrinth.com/project/dual-dye-shulkers)
+4. Place both mods in your `mods` folder
 
 ## Building from Source
-
-### Prerequisites
-
-- Java 21 or higher
-
-### Build
 
 ```bash
 # Windows
 gradlew.bat build
 
-# Mac/Linux
+# Linux/macOS
 ./gradlew build
 ```
 
-The compiled JAR will be in `build/libs/`
-
-## Compatibility
-
-- **Minecraft**: 1.21.4
-- **Fabric Loader**: 0.16.0+
-- **Fabric API**: Required
+Output JAR will be in `build/libs/`
 
 ## License
 
