@@ -220,7 +220,7 @@ public class MultiColorShulkers implements ModInitializer {
 	}
 
 
-	private void syncColorsToClients(ServerWorld world, BlockPos pos, ShulkerColors colors) {
+	public static void syncColorsToClients(ServerWorld world, BlockPos pos, ShulkerColors colors) {
 		ColorSyncPayload payload = new ColorSyncPayload(pos, colors.topColor(), colors.bottomColor());
 
 		// Send to all players tracking this block
@@ -229,6 +229,24 @@ public class MultiColorShulkers implements ModInitializer {
 				ServerPlayNetworking.send(player, payload);
 			}
 		}
+	}
+
+    public static void trackShulker(ServerWorld world, BlockPos pos) {
+        getColoredShulkers(world.getRegistryKey()).add(pos);
+    }
+
+	public static void clearColors(ServerWorld world, BlockPos pos) {
+		// Remove from tracking
+		getColoredShulkers(world.getRegistryKey()).remove(pos);
+
+		// Send clear packet (colors -1, -1) to nearby clients
+		ColorSyncPayload payload = new ColorSyncPayload(pos, -1, -1);
+		for (ServerPlayerEntity player : world.getPlayers()) {
+			if (player.getBlockPos().isWithinDistance(pos, 64)) {
+				ServerPlayNetworking.send(player, payload);
+			}
+		}
+		LOGGER.debug("[SERVER] Cleared colors for {}", pos);
 	}
 
 	private void registerCauldronBehavior() {

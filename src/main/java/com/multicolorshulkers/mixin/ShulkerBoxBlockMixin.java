@@ -17,6 +17,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.world.World;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
@@ -81,4 +84,23 @@ public class ShulkerBoxBlockMixin {
         // Set the updated block entity data
         stack.set(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.of(nbt));
     }
+
+    @Inject(method = "onStateReplaced", at = @At("HEAD"))
+    private void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
+        if (state.isOf(newState.getBlock())) {
+            return;
+        }
+
+        if (world instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBox) {
+                ShulkerColors colors = shulkerBox.getAttached(MultiColorShulkers.SHULKER_COLORS);
+                if (colors != null && (colors.topColor() != -1 || colors.bottomColor() != -1)) {
+                     MultiColorShulkers.clearColors(serverWorld, pos);
+                }
+            }
+        }
+        }
+
 }
+

@@ -103,7 +103,12 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 			// Send packet to server
 			ClientPlayNetworking.send(new DyeRequestPayload(blockPos, colorBottom));
 
-			return ActionResult.SUCCESS;
+			// Swing hand visually
+			player.swingHand(hand);
+
+			// Return FAIL to prevent the client from sending a standard "interact block" packet
+			// which would cause the shulker box to open on the server.
+			return ActionResult.FAIL;
 		});
 	}
 
