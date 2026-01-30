@@ -5,8 +5,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"ShulkerBoxBlockEntityRendererMixin",
-		"ShulkerBoxModelRendererMixin",
-		"SpecialItemModelMixin"
+		"ShulkerEntityModelAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

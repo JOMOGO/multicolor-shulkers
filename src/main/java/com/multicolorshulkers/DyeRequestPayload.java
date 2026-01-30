@@ -18,7 +18,7 @@ public record DyeRequestPayload(BlockPos pos, boolean colorBottom) implements Cu
 
 	public static final PacketCodec<RegistryByteBuf, DyeRequestPayload> CODEC = PacketCodec.tuple(
 		BlockPos.PACKET_CODEC, DyeRequestPayload::pos,
-		PacketCodecs.BOOLEAN, DyeRequestPayload::colorBottom,
+		PacketCodecs.BOOL, DyeRequestPayload::colorBottom,
 		DyeRequestPayload::new
 	);
 
