@@ -2,7 +2,7 @@
 
 [![Modrinth](https://img.shields.io/modrinth/dt/dual-dye-shulkers?logo=modrinth&label=Modrinth)](https://modrinth.com/project/dual-dye-shulkers)
 
-A Fabric mod for Minecraft 1.21.4 that lets you apply different colors to the **top (lid)** and **bottom (base)** of shulker boxes!
+A Fabric mod for Minecraft 1.21.1+ that lets you apply different colors to the **top (lid)** and **bottom (base)** of shulker boxes!
 
 ## Features
 
@@ -36,7 +36,7 @@ Key combos can be any combination of two keys/mouse buttons.
 
 ## Requirements
 
-- Minecraft 1.21.4
+- Minecraft 1.21.1 or 1.21.4 more versions comming soon!
 - Fabric Loader 0.16.0+
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 
