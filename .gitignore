@@ -30,7 +30,9 @@ logs/
 # Windows
 Thumbs.db
 
-# Claude Code
+*.hprof
+
+# AI
 .claude/
 CLAUDE.md
-*.hprof
+.agent

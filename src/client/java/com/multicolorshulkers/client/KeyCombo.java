@@ -41,7 +41,8 @@ public class KeyCombo {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyCombo keyCombo = (KeyCombo) o;
-		return Objects.equals(key1, keyCombo.key1) && Objects.equals(key2, keyCombo.key2);
+		return Objects.equals(key1.getTranslationKey(), keyCombo.key1.getTranslationKey()) &&
+			   Objects.equals(key2.getTranslationKey(), keyCombo.key2.getTranslationKey());
 	}
 
 	@Override

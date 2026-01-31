@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 public class KeyComboEntry extends TooltipListEntry<KeyCombo> {
 	private final KeyCombo defaultValue;
+	private final KeyCombo originalValue;
 	private KeyCombo value;
 	private final Consumer<KeyCombo> saveConsumer;
 	private final ButtonWidget buttonWidget;
@@ -25,6 +26,7 @@ public class KeyComboEntry extends TooltipListEntry<KeyCombo> {
 
 	public KeyComboEntry(Text fieldName, KeyCombo value, KeyCombo defaultValue, Consumer<KeyCombo> saveConsumer, Text tooltipText) {
 		super(fieldName, () -> Optional.ofNullable(tooltipText == null ? null : new Text[]{tooltipText}));
+		this.originalValue = value;
 		this.value = value;
 		this.defaultValue = defaultValue;
 		this.saveConsumer = saveConsumer;
@@ -79,6 +81,11 @@ public class KeyComboEntry extends TooltipListEntry<KeyCombo> {
 	}
 
 	@Override
+	public boolean isEdited() {
+		return !value.equals(originalValue);
+	}
+
+	@Override
 	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
 		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
 
@@ -120,15 +127,8 @@ public class KeyComboEntry extends TooltipListEntry<KeyCombo> {
 			handleKeyInput(key);
 			return true;
 		}
-
-		if (buttonWidget.isMouseOver(mouseX, mouseY)) {
-			buttonWidget.onPress();
-			return true;
-		}
-		if (resetButton.isMouseOver(mouseX, mouseY) && resetButton.active) {
-			resetButton.onPress();
-			return true;
-		}
+        
+        // Let super handle children clicks (buttons)
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
