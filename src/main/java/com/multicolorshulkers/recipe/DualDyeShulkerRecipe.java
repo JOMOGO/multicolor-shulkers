@@ -98,6 +98,8 @@ public class DualDyeShulkerRecipe extends SpecialCraftingRecipe {
     *///?}
 
     private boolean matchesShared(int width, int height, List<ItemStack> stacks) {
+        if (!com.multicolorshulkers.client.ModConfig.get().enableCrafting) return false;
+
         ItemStack shulkerStack = ItemStack.EMPTY;
         int dyeCount = 0;
 

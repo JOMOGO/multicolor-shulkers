@@ -19,6 +19,8 @@ public class ShulkerBoxColoringRecipeMixin {
 
     @Inject(method = "matches(Lnet/minecraft/recipe/input/CraftingRecipeInput;Lnet/minecraft/world/World;)Z", at = @At("HEAD"), cancellable = true)
     private void blockVanillaWhenDyeInTopOrBottom(CraftingRecipeInput input, World world, CallbackInfoReturnable<Boolean> cir) {
+        if (!com.multicolorshulkers.client.ModConfig.get().enableCrafting) return;
+
         int width = input.getWidth();
         int height = input.getHeight();
 
@@ -50,6 +52,14 @@ public class ShulkerBoxColoringRecipeMixin {
             }
         }
     }
+
+    @Inject(method = "craft(Lnet/minecraft/recipe/input/CraftingRecipeInput;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void stripCustomColorsFromOutput(CraftingRecipeInput input, net.minecraft.registry.RegistryWrapper.WrapperLookup lookup, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack result = cir.getReturnValue();
+        if (!result.isEmpty() && Block.getBlockFromItem(result.getItem()) instanceof ShulkerBoxBlock) {
+             MultiColorShulkers.removeColorsFromItemStack(result);
+        }
+    }
 }
 *///?}
 
@@ -73,6 +83,8 @@ public class ShulkerBoxColoringRecipeMixin {
 
     @Inject(method = "matches(Lnet/minecraft/recipe/input/CraftingRecipeInput;Lnet/minecraft/world/World;)Z", at = @At("HEAD"), cancellable = true)
     private void blockVanillaShulkerDye(CraftingRecipeInput input, World world, CallbackInfoReturnable<Boolean> cir) {
+        if (!com.multicolorshulkers.client.ModConfig.get().enableCrafting) return;
+
         // TransmuteRecipe is used for shulker dyeing in 1.21.2+
         // We block it when the input is a shulker + dye combination
         // This allows our custom DualDyeShulkerRecipe to handle the crafting instead
@@ -95,6 +107,14 @@ public class ShulkerBoxColoringRecipeMixin {
         if (hasShulker && hasDye) {
             MultiColorShulkers.LOGGER.info("[MIXIN] Blocking TransmuteRecipe for shulker+dye combination");
             cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "craft(Lnet/minecraft/recipe/input/CraftingRecipeInput;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void stripCustomColorsFromOutput(CraftingRecipeInput input, net.minecraft.registry.RegistryWrapper.WrapperLookup lookup, CallbackInfoReturnable<net.minecraft.item.ItemStack> cir) {
+        net.minecraft.item.ItemStack result = cir.getReturnValue();
+        if (!result.isEmpty() && net.minecraft.block.Block.getBlockFromItem(result.getItem()) instanceof net.minecraft.block.ShulkerBoxBlock) {
+             MultiColorShulkers.removeColorsFromItemStack(result);
         }
     }
 }
@@ -152,6 +172,14 @@ public class ShulkerBoxColoringRecipeMixin {
             if (dyeRow == 0 || dyeRow == height - 1) {
                 cir.setReturnValue(false);
             }
+        }
+    }
+
+    @Inject(method = "craft(Lnet/minecraft/inventory/RecipeInputInventory;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void stripCustomColorsFromOutput(RecipeInputInventory input, net.minecraft.registry.RegistryWrapper.WrapperLookup lookup, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack result = cir.getReturnValue();
+        if (!result.isEmpty() && Block.getBlockFromItem(result.getItem()) instanceof ShulkerBoxBlock) {
+             MultiColorShulkers.removeColorsFromItemStack(result);
         }
     }
 }

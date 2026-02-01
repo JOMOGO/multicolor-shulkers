@@ -33,24 +33,40 @@ public class ClothConfigScreen {
 				.setSaveConsumer(value -> config.showTooltip = value)
 				.build());
 
+		general.addEntry(entryBuilder.startBooleanToggle(
+						Text.translatable("config.dual-dye-shulkers.enableCrafting"),
+						config.enableCrafting)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("config.dual-dye-shulkers.enableCrafting.tooltip"))
+				.setSaveConsumer(value -> config.enableCrafting = value)
+				.build());
+
+		general.addEntry(entryBuilder.startBooleanToggle(
+						Text.translatable("config.dual-dye-shulkers.enableKeybinds"),
+						config.enableKeybinds)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("config.dual-dye-shulkers.enableKeybinds.tooltip"))
+				.setSaveConsumer(value -> config.enableKeybinds = value)
+				.build());
+
 		// Controls category
 		ConfigCategory controls = builder.getOrCreateCategory(Text.translatable("config.dual-dye-shulkers.category.controls"));
 
 		// Top binding - custom key combo entry
 		controls.addEntry(new KeyComboEntry(
 				Text.translatable("config.dual-dye-shulkers.topCombo"),
-				config.getTopCombo(),
-				ModConfig.DEFAULT_TOP_COMBO,
-				config::setTopCombo,
+				ClientConfigHelper.getTopCombo(config),
+				ClientConfigHelper.DEFAULT_TOP_COMBO,
+				combo -> ClientConfigHelper.setTopCombo(config, combo),
 				Text.translatable("config.dual-dye-shulkers.topCombo.tooltip")
 		));
 
 		// Bottom binding - custom key combo entry
 		controls.addEntry(new KeyComboEntry(
 				Text.translatable("config.dual-dye-shulkers.bottomCombo"),
-				config.getBottomCombo(),
-				ModConfig.DEFAULT_BOTTOM_COMBO,
-				config::setBottomCombo,
+				ClientConfigHelper.getBottomCombo(config),
+				ClientConfigHelper.DEFAULT_BOTTOM_COMBO,
+				combo -> ClientConfigHelper.setBottomCombo(config, combo),
 				Text.translatable("config.dual-dye-shulkers.bottomCombo.tooltip")
 		));
 

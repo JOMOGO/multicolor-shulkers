@@ -89,6 +89,7 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 			}
 
 			// Check which binding is active to determine action
+			if (!ModConfig.get().enableKeybinds) return ActionResult.PASS;
 			boolean topKeyPressed = isTopColorBindingActive();
 			boolean bottomKeyPressed = isBottomColorBindingActive();
 
@@ -120,7 +121,7 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 	 * Check if the top color binding is currently active (both keys pressed).
 	 */
 	public static boolean isTopColorBindingActive() {
-		KeyCombo combo = ModConfig.get().getTopCombo();
+		KeyCombo combo = ClientConfigHelper.getTopCombo(ModConfig.get());
 		return isKeyPressed(combo.getKey1()) && isKeyPressed(combo.getKey2());
 	}
 
@@ -128,7 +129,7 @@ public class MultiColorShulkersClient implements ClientModInitializer {
 	 * Check if the bottom color binding is currently active (both keys pressed).
 	 */
 	public static boolean isBottomColorBindingActive() {
-		KeyCombo combo = ModConfig.get().getBottomCombo();
+		KeyCombo combo = ClientConfigHelper.getBottomCombo(ModConfig.get());
 		return isKeyPressed(combo.getKey1()) && isKeyPressed(combo.getKey2());
 	}
 

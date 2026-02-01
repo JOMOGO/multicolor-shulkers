@@ -7,5 +7,9 @@
 	"config.dual-dye-shulkers.topCombo": "Dye Top (Lid)",
 	"config.dual-dye-shulkers.topCombo.tooltip": "Key combo to dye the top. Click and press two keys/buttons.",
 	"config.dual-dye-shulkers.bottomCombo": "Dye Bottom (Base)",
-	"config.dual-dye-shulkers.bottomCombo.tooltip": "Key combo to dye the bottom. Click and press two keys/buttons."
+	"config.dual-dye-shulkers.bottomCombo.tooltip": "Key combo to dye the bottom. Click and press two keys/buttons.",
+	"config.dual-dye-shulkers.enableCrafting": "Enable Crafting Recipe",
+	"config.dual-dye-shulkers.enableCrafting.tooltip": "Enable crafting shulker boxes with dyes in a crafting table.",
+	"config.dual-dye-shulkers.enableKeybinds": "Enable In-World Dyeing",
+	"config.dual-dye-shulkers.enableKeybinds.tooltip": "Enable dyeing shulker boxes by holding the key combo."
 }

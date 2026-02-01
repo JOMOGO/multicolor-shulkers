@@ -354,7 +354,7 @@ public class MultiColorShulkers implements ModInitializer {
 	/**
 	 * Remove colors from an ItemStack's stored block entity data.
 	 */
-	private void removeColorsFromItemStack(ItemStack stack) {
+	public static void removeColorsFromItemStack(ItemStack stack) {
 		var beData = stack.get(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA);
 		if (beData == null) return;
 
