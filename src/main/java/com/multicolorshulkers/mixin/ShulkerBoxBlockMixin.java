@@ -9,7 +9,11 @@ import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
+//? if MC: >=12104 {
 import net.minecraft.loot.context.LootWorldContext;
+//?} else {
+/*import net.minecraft.loot.context.LootContextParameterSet;
+*///?}
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -30,10 +34,17 @@ import java.util.List;
 @Mixin(ShulkerBoxBlock.class)
 public class ShulkerBoxBlockMixin {
 
+    //? if MC: >=12104 {
     @Inject(method = "getDroppedStacks", at = @At("RETURN"))
     private void onGetDroppedStacks(BlockState state, LootWorldContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
         // Get the block entity from the loot context
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+    //?} else {
+    /*@Inject(method = "getDroppedStacks", at = @At("RETURN"))
+    private void onGetDroppedStacks(BlockState state, LootContextParameterSet.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
+        // Get the block entity from the loot context
+        BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+    *///?}
         if (!(blockEntity instanceof ShulkerBoxBlockEntity shulkerBox)) {
             return;
         }
@@ -123,4 +134,3 @@ public class ShulkerBoxBlockMixin {
         return instance.spawnEntity(entity);
     }
 }
-

@@ -1,5 +1,6 @@
 accessWidener v2 named
 
+#? if MC: >=12102 {
 # Access the private model field in ShulkerBoxBlockEntityRenderer
 accessible field net/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer model Lnet/minecraft/client/render/block/entity/ShulkerBoxBlockEntityRenderer$ShulkerBoxBlockModel;
 
@@ -17,3 +18,4 @@ accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelR
 accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer openness F
 accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer orientation Lnet/minecraft/util/math/Direction;
 accessible field net/minecraft/client/render/item/model/special/ShulkerBoxModelRenderer textureId Lnet/minecraft/client/util/SpriteIdentifier;
+#?}

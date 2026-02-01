@@ -4,6 +4,7 @@
 	"version": "${version}",
 	"name": "Dual-Dye Shulkers",
 	"description": "Apply different colors to the top (lid) and bottom (base) of shulker boxes",
+	"icon": "assets/multicolor-shulkers/icon.png",
 	"authors": [
 		"JOMOGO"
 	],

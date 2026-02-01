@@ -1,5 +1,6 @@
 package com.multicolorshulkers.mixin;
 
+//? if MC: >=12102 {
 import com.multicolorshulkers.MultiColorShulkers;
 import com.multicolorshulkers.MultiColorShulkers.ShulkerColors;
 import com.multicolorshulkers.client.MultiColorShulkersClient;
@@ -22,18 +23,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SpecialItemModel.class)
 public class SpecialItemModelMixin<T> {
 
-    @Shadow
-    @Final
-    private SpecialModelRenderer<T> specialModelType;
+    @Shadow @Final private SpecialModelRenderer<T> specialModelType;
 
     @Inject(method = "update", at = @At("HEAD"))
     private void onUpdate(ItemRenderState renderState, ItemStack stack, ItemModelManager itemModelManager,
                           ModelTransformationMode transformationMode, ClientWorld world,
                           LivingEntity user, int seed, CallbackInfo ci) {
-        // Only process for shulker box renderers
         if (this.specialModelType instanceof ShulkerBoxModelRenderer) {
             ShulkerColors colors = MultiColorShulkers.getColorsFromItemStack(stack);
             MultiColorShulkersClient.setItemColors(colors);
         }
     }
 }
+//?} else {
+/*
+import net.minecraft.client.render.item.ItemRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+
+// Stub mixin for 1.21.1 - SpecialItemModel doesn't exist
+@Mixin(ItemRenderer.class)
+public class SpecialItemModelMixin<T> {
+    // No-op for 1.21.1 - item rendering handled by BuiltinModelItemRendererMixin
+}
+*///?}
