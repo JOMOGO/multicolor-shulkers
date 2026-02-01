@@ -36,7 +36,7 @@ Key combos can be any combination of two keys/mouse buttons.
 
 ## Requirements
 
-- Minecraft 1.21.1 or 1.21.4 more versions comming soon!
+- Minecraft 1.21.1 or 1.21.4 (more versions coming soon!)
 - Fabric Loader 0.16.0+
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 
@@ -53,15 +53,18 @@ Key combos can be any combination of two keys/mouse buttons.
 
 ## Building from Source
 
+This project uses [Stonecutter](https://github.com/kikugie/stonecutter) for multi-version support.
+
 ```bash
 # Windows
+# Build for the active version (manage active version with ./gradlew chiseled)
 gradlew.bat build
 
 # Linux/macOS
 ./gradlew build
 ```
 
-Output JAR will be in `build/libs/`
+The output JAR will be in `versions/<mc-version>/build/libs/`.
 
 ## License
 

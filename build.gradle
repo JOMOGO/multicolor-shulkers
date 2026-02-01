@@ -111,8 +111,10 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "dual-dye-shulkers"
     versionNumber = project.version
+    versionName = project.mod_version
     versionType = "release"
     uploadFile = remapJar
+    changelog = getChangelog(project.mod_version)
     gameVersions = [minecraft_version]
     loaders = ["fabric"]
     dependencies {
@@ -121,4 +123,27 @@ modrinth {
         optional.project "modmenu"
     }
     syncBodyFrom = rootProject.file("README.md").text
+}
+
+def getChangelog(version) {
+    def changelogFile = rootProject.file("CHANGELOG.md")
+    if (!changelogFile.exists()) return ""
+    
+    def lines = changelogFile.readLines()
+    def log = new StringBuilder()
+    def recording = false
+    
+    for (line in lines) {
+        if (line.startsWith("## [${version}]")) {
+            recording = true
+            continue
+        }
+        if (recording && line.startsWith("## [")) {
+            break
+        }
+        if (recording) {
+            log.append(line).append("\n")
+        }
+    }
+    return log.toString().trim()
 }
