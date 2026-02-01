@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.10-SNAPSHOT'
     id 'maven-publish'
-    // id 'com.modrinth.minotaur' version '2.+' // Commented out to unblock build
+    id 'com.modrinth.minotaur' version '2.8.7'
 }
 
 // Load version-specific properties from stonecutter.json
@@ -107,20 +107,18 @@ jar {
     }
 }
 
-if (System.getenv("MODRINTH_TOKEN")) {
-    modrinth {
-        token = System.getenv("MODRINTH_TOKEN")
-        projectId = "dual-dye-shulkers"
-        versionNumber = project.version
-        versionType = "release"
-        uploadFile = remapJar
-        gameVersions = [minecraft_version]
-        loaders = ["fabric"]
-        dependencies {
-            required.project "fabric-api"
-            optional.project "cloth-config"
-            optional.project "modmenu"
-        }
-        syncBodyFrom = rootProject.file("README.md").text
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "dual-dye-shulkers"
+    versionNumber = project.version
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = [minecraft_version]
+    loaders = ["fabric"]
+    dependencies {
+        required.project "fabric-api"
+        optional.project "cloth-config"
+        optional.project "modmenu"
     }
+    syncBodyFrom = rootProject.file("README.md").text
 }

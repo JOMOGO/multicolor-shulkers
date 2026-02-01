@@ -35,5 +35,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/libs/*.jar
+          files: |
+            versions/1.21.1/build/libs/*.jar
+            versions/1.21.4/build/libs/*.jar
           generate_release_notes: true
