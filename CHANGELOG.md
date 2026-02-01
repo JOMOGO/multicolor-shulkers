@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0]
+- **Dual-Dye Crafting**: Added custom crafting recipe for applying different colors to shulker lid and base
+  - Place dye above the shulker to color the lid
+  - Place dye below the shulker to color the base
+  - Place dye beside the shulker for vanilla whole-box coloring
+  - Works in both crafting table and 2x2 hand crafting grid
+
 ## [1.2.2]
 - **Fixed Modrinth Publishing**: Resolved issues with multi-version builds and artifact uploading
 - **Config Screen**: Added Cloth Config & Mod Menu integration

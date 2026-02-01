@@ -23,6 +23,7 @@ def major = versionParts[0].toInteger()
 def minor = versionParts[1].toInteger()
 def patch = versionParts.length > 2 ? versionParts[2].toInteger() : 0
 def mcVersionNum = major * 10000 + minor * 100 + patch
+println "MC Version: ${minecraft_version} -> Num: ${mcVersionNum}"
 
 // Configure Stonecutter preprocessor
 stonecutter {
@@ -92,6 +93,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.release = 21
+    it.options.compilerArgs << "-Xdiags:verbose"
 }
 
 java {

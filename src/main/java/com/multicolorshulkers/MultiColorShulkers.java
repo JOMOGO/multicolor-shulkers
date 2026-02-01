@@ -60,6 +60,12 @@ public class MultiColorShulkers implements ModInitializer {
 		}
 	}
 
+	//? if MC: >=12102 {
+	public static final net.minecraft.recipe.RecipeSerializer<com.multicolorshulkers.recipe.DualDyeShulkerRecipe> DUAL_DYE_SERIALIZER = new net.minecraft.recipe.SpecialCraftingRecipe.SpecialRecipeSerializer<>(com.multicolorshulkers.recipe.DualDyeShulkerRecipe::new);
+	//?} else {
+	/*public static final net.minecraft.recipe.RecipeSerializer<com.multicolorshulkers.recipe.DualDyeShulkerRecipe> DUAL_DYE_SERIALIZER = new net.minecraft.recipe.SpecialRecipeSerializer<>(com.multicolorshulkers.recipe.DualDyeShulkerRecipe::new);
+	*///?}
+
 	public static final AttachmentType<ShulkerColors> SHULKER_COLORS = AttachmentRegistry.createPersistent(
 		Identifier.of(MOD_ID, "colors"),
 		ShulkerColors.CODEC
@@ -78,6 +84,9 @@ public class MultiColorShulkers implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Dual-Dye Shulkers initialized!");
+		LOGGER.info("Registering recipe serializer: {}:dual_dye", MOD_ID);
+		net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.RECIPE_SERIALIZER, Identifier.of(MOD_ID, "dual_dye"), DUAL_DYE_SERIALIZER);
+		LOGGER.info("Recipe serializer registered successfully");
 
 		// Register packets
 		PayloadTypeRegistry.playS2C().register(ColorSyncPayload.ID, ColorSyncPayload.CODEC);
