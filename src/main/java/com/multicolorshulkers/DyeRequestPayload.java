@@ -16,11 +16,19 @@ public record DyeRequestPayload(BlockPos pos, boolean colorBottom) implements Cu
 	public static final CustomPayload.Id<DyeRequestPayload> ID =
 		new CustomPayload.Id<>(Identifier.of(MultiColorShulkers.MOD_ID, "dye_request"));
 
+	//? if MC: >=12102 {
 	public static final PacketCodec<RegistryByteBuf, DyeRequestPayload> CODEC = PacketCodec.tuple(
 		BlockPos.PACKET_CODEC, DyeRequestPayload::pos,
 		PacketCodecs.BOOLEAN, DyeRequestPayload::colorBottom,
 		DyeRequestPayload::new
 	);
+	//?} else {
+	/*public static final PacketCodec<RegistryByteBuf, DyeRequestPayload> CODEC = PacketCodec.tuple(
+		BlockPos.PACKET_CODEC, DyeRequestPayload::pos,
+		PacketCodecs.BOOL, DyeRequestPayload::colorBottom,
+		DyeRequestPayload::new
+	);
+	*///?}
 
 	@Override
 	public Id<? extends CustomPayload> getId() {

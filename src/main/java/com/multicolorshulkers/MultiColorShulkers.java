@@ -20,6 +20,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
+//? if MC: <12102 {
+/*import net.minecraft.util.ItemActionResult;
+*///?}
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.registry.RegistryKey;
@@ -279,14 +282,22 @@ public class MultiColorShulkers implements ModInitializer {
 						// Stats
 						player.incrementStat(Stats.CLEAN_SHULKER_BOX);
 					}
+					//? if MC: >=12102 {
 					return ActionResult.SUCCESS;
+					//?} else {
+					/*return ItemActionResult.SUCCESS;
+					*///?}
 				}
 
 				// No custom colors - delegate to original vanilla behavior
 				if (originalBehavior != null) {
 					return originalBehavior.interact(state, world, pos, player, hand, stack);
 				}
+				//? if MC: >=12102 {
 				return ActionResult.PASS;
+				//?} else {
+				/*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				*///?}
 			};
 
 			CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(shulkerItem, washShulkerColors);
