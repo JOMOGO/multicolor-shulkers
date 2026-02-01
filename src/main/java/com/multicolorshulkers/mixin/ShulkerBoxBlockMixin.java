@@ -20,6 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
 
@@ -102,5 +106,21 @@ public class ShulkerBoxBlockMixin {
         }
         }
 
+
+    @Redirect(method = "onBreak", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
+    private boolean onCreativeBreakDrop(World instance, Entity entity, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        // This redirects the world.spawnEntity call in onBreak (used for Creative mode drops)
+        if (entity instanceof ItemEntity itemEntity) {
+             BlockEntity blockEntity = world.getBlockEntity(pos);
+             if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBox) {
+                ShulkerColors colors = shulkerBox.getAttached(MultiColorShulkers.SHULKER_COLORS);
+                if (colors != null && (colors.topColor() != -1 || colors.bottomColor() != -1)) {
+                     addColorsToItemStack(itemEntity.getStack(), colors);
+                     MultiColorShulkers.LOGGER.debug("[CREATIVE BREAK] Added colors to dropped filled shulker box");
+                }
+             }
+        }
+        return instance.spawnEntity(entity);
+    }
 }
 
