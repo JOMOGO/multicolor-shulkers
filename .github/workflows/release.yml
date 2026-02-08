@@ -16,6 +16,7 @@ on:
           - "1.21.4"
           - "1.21.5"
           - "1.21.6"
+          - "1.21.7"
 
 permissions:
   contents: write
@@ -46,12 +47,12 @@ jobs:
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ "${{ inputs.mc_version }}" = "all" ]; then
-              echo "versions=1.21.1 1.21.4 1.21.5 1.21.6" >> $GITHUB_OUTPUT
+              echo "versions=1.21.1 1.21.4 1.21.5 1.21.6 1.21.7" >> $GITHUB_OUTPUT
             else
               echo "versions=${{ inputs.mc_version }}" >> $GITHUB_OUTPUT
             fi
           else
-            echo "versions=1.21.1 1.21.4 1.21.5 1.21.6" >> $GITHUB_OUTPUT
+            echo "versions=1.21.1 1.21.4 1.21.5 1.21.6 1.21.7" >> $GITHUB_OUTPUT
           fi
 
       - name: Build selected versions
