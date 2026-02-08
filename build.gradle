@@ -112,7 +112,7 @@ jar {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "dual-dye-shulkers"
-    versionNumber = project.version
+    versionNumber = project.mod_version
     versionName = project.mod_version
     versionType = "release"
     uploadFile = remapJar

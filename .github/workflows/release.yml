@@ -16,10 +16,6 @@ on:
           - "1.21.4"
           - "1.21.5"
           - "1.21.6"
-      tag:
-        description: "Tag name (e.g., v1.3.0)"
-        required: true
-        type: string
 
 permissions:
   contents: write
@@ -43,16 +39,19 @@ jobs:
       - name: Determine versions to build
         id: versions
         run: |
+          # Read mod_version from gradle.properties
+          MOD_VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          TAG="v${MOD_VERSION}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ "${{ inputs.mc_version }}" = "all" ]; then
               echo "versions=1.21.1 1.21.4 1.21.5 1.21.6" >> $GITHUB_OUTPUT
             else
               echo "versions=${{ inputs.mc_version }}" >> $GITHUB_OUTPUT
             fi
-            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
           else
             echo "versions=1.21.1 1.21.4 1.21.5 1.21.6" >> $GITHUB_OUTPUT
-            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Build selected versions
